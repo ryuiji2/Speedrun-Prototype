@@ -5,7 +5,11 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
-    public float movementSpeed;
+    public float movementSpeed = 10f;
+    public float rotateSpeed = 3f;
+
+    public Transform cameraTarget;
+    private bool detectInput;
 
     public float jumpStrenght;
     public float fallMultiplier = 2.5f;
@@ -14,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
     private bool canJump;
 
-    public void Start()
+    public void Awake()
     {
         rb = transform.GetComponent<Rigidbody>();
     }
@@ -25,12 +29,37 @@ public class PlayerMovement : MonoBehaviour
         Jump();
     }
 
+    public void LateUpdate()
+    {
+        if(detectInput)
+        {
+            float targetRotation = cameraTarget.eulerAngles.y;
+            transform.eulerAngles = Vector3.up * targetRotation;
+        }
+    }
+
     public void Movement ()
     {
-        float xInput = Input.GetAxis("Horizontal");
-        float zInput = Input.GetAxis("Vertical");
+        Vector2 keyInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 
-        transform.Translate(new Vector3(xInput, 0, zInput) * Time.deltaTime * movementSpeed);
+        if (keyInput != Vector2.zero)
+        {
+            if (Input.GetButton("Fire2"))
+            {
+                detectInput = true;
+                transform.Translate(new Vector3(keyInput.x, 0f, keyInput.y) * Time.deltaTime * movementSpeed);
+            }
+            else
+            {
+                detectInput = false;
+                transform.Translate(new Vector3(0f, 0f, keyInput.y) * Time.deltaTime * movementSpeed);
+                transform.Rotate(new Vector3(0f, keyInput.x, 0f) * rotateSpeed);
+            }
+        }
+        else
+        {
+            detectInput = false;
+        }
     }
 
     public void Jump ()
