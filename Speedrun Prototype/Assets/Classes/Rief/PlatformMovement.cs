@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class PlatformMovement : MonoBehaviour {
+public class PlatformMovement : MonoBehaviour {
     
     public GameObject thisPlatform;
     public bool rightDir;
     public int moveSpeed;
 
-	void Start () {
+    public virtual void Start ()
+    {
+        thisPlatform = this.gameObject;
+        rightDir = true;
     }
-	
-	void Update () {
-        Moving ();
-	}
 
-    void Moving ()
+
+    public virtual void Moving ()
     {   
         if(rightDir == true)
         {
