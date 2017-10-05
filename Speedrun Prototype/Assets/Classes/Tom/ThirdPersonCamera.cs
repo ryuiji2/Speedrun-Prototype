@@ -20,6 +20,12 @@ public class ThirdPersonCamera : MonoBehaviour
     private Vector3 rotationSmoothVelocity;
     private Vector3 currentRotation;
 
+    public void Start()
+    {
+        // Hides the cursor
+        Cursor.visible = false;
+    }
+
     // Is LateUpdate to be sure target.position is set so the camera is moved to the correct position
     private void LateUpdate()
     {
@@ -43,5 +49,8 @@ public class ThirdPersonCamera : MonoBehaviour
         distanceFromTarget = Mathf.Clamp(distanceFromTarget, distanceMinMax.x, distanceMinMax.y);
 
         transform.position = target.position - transform.forward * distanceFromTarget;
+
+       if (Input.GetButtonDown("Cancel"))
+            Cursor.visible = true;
     }
 }
