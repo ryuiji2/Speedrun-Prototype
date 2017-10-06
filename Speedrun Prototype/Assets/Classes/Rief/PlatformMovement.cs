@@ -3,35 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlatformMovement : MonoBehaviour {
-    
+
     public GameObject thisPlatform;
-    public bool rightDir;
+    public Vector3 platformTrans;
+    public int disValue;
+    public bool dirChange;
     public int moveSpeed;
 
-    public virtual void Start ()
-    {
+    public virtual void Start () {
         thisPlatform = this.gameObject;
-        rightDir = true;
+        platformTrans = thisPlatform.transform.position;
+        dirChange = true;
     }
 
 
-    public virtual void Moving ()
-    {   
-        if(rightDir == true)
-        {
+    public virtual void Moving () {
+        if (dirChange == true) {
             thisPlatform.transform.Translate (Vector3.right * moveSpeed * Time.deltaTime);
-        }
-        else
-        {
+        } else {
             thisPlatform.transform.Translate (-Vector3.right * moveSpeed * Time.deltaTime);
         }
-        if(thisPlatform.transform.position.x >= 2)
-        {
-            rightDir = false;
+
+        if (thisPlatform.transform.position.x >= platformTrans.x + disValue) {
+            dirChange = false;
         }
-        if(thisPlatform.transform.position.x <= -2)
-        {
-            rightDir = true;
+        if (thisPlatform.transform.position.x <= platformTrans.x - disValue) {
+            dirChange = true;
         }
     }
 }
