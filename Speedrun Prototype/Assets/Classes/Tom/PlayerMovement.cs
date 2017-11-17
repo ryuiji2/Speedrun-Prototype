@@ -1,26 +1,29 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
+    public Animator anim;
+    public AudioSource music;
+
     public float movementSpeed = 10f;
     public float rotateSpeed = 3f;
 
     public Transform cameraTarget;
-    private bool detectInput;
 
     public float jumpStrenght;
     public float fallMultiplier = 2.5f;
     public float lowJumpMultiplier = 2f;
 
     private Rigidbody rb;
-    private bool canJump;
+    private int numberJumps = 2;
 
     public void Awake()
     {
         rb = transform.GetComponent<Rigidbody>();
+        numberJumps = 2;
     }
 
     public void Update()
@@ -31,11 +34,8 @@ public class PlayerMovement : MonoBehaviour
 
     public void LateUpdate()
     {
-        if(detectInput)
-        {
-            float targetRotation = cameraTarget.eulerAngles.y;
-            transform.eulerAngles = Vector3.up * targetRotation;
-        }
+        float targetRotation = cameraTarget.eulerAngles.y;
+        transform.eulerAngles = Vector3.up * targetRotation;
     }
 
     public void Movement ()
@@ -44,30 +44,35 @@ public class PlayerMovement : MonoBehaviour
 
         if (keyInput != Vector2.zero)
         {
-            if (Input.GetButton("Fire2"))
-            {
-                detectInput = true;
-                transform.Translate(new Vector3(keyInput.x, 0f, keyInput.y) * Time.deltaTime * movementSpeed);
-            }
-            else
-            {
-                detectInput = false;
-                transform.Translate(new Vector3(0f, 0f, keyInput.y) * Time.deltaTime * movementSpeed);
-                transform.Rotate(new Vector3(0f, keyInput.x, 0f) * rotateSpeed);
-            }
+            transform.Translate(new Vector3(keyInput.x, 0f, keyInput.y) * Time.deltaTime * movementSpeed);
+            if (numberJumps == 2)
+                if (!anim.GetBool("Run"))
+                    anim.SetBool("Run", true);
+            Music();
         }
         else
         {
-            detectInput = false;
+            anim.SetBool("Run", false);
+            music.Pause();
         }
+    }
+
+    public void Music ()
+    {
+        if (!music.isPlaying)
+        {
+            music.Play();
+        }
+        else music.UnPause();
     }
 
     public void Jump ()
     {
-        if (Input.GetButtonDown("Jump") && canJump)
+        if (Input.GetButtonDown("Jump") && numberJumps >= 1)
         {
+            numberJumps--;
             rb.velocity += new Vector3(0, jumpStrenght, 0);
-            canJump = false;
+            anim.SetTrigger("Jump");
         }
         
         if(rb.velocity.y < 0)
@@ -78,7 +83,12 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnCollisionEnter(Collision collision)
     {
-        if (collision.transform.tag == "Platform" && canJump == false)
-            canJump = true;
+        if (collision.transform.tag == "Platform")
+            numberJumps = 2;
+    }
+
+    public void EndRun ()
+    {
+        print("Stopped!");
     }
 }
