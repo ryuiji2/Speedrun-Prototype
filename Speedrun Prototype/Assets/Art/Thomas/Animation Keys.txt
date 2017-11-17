@@ -1,0 +1,7 @@
+0 - 80 Jump
+
+90 - 97 Start Run
+
+97 - 112 Run loop
+
+112 - 120 Stop run
